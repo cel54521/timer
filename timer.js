@@ -33,26 +33,36 @@ function update(){
     var remainMinute = Math.abs(parseInt((diffUnixTime / 1000) / 60 % 60));
 
     var rtView = document.getElementById("rtView");
-    if(remainHour < 0){
-        rtView.innerHTML = remainHour + "時間" + remainMinute + "分　超過しています";
+
+    if(diffUnixTime < 0){
+        rtView.innerHTML = remainHour + "時間" + remainMinute + "分 超過しています";
     }else{
         rtView.innerHTML = "後" + remainHour + "時間" + remainMinute + "分です";
     }
 
     if(hour == finishHour){
         if(minute ==finishMinute){
-            show();
+            if (!("Notification" in window)) {
+                if(notificationWindow == null){
+                    showForIE();
+                }
+            }else{
+                if(notificationWindow == null){
+                    show("終了時間になりました","icon.png");
+                    notificationWindow = true;
+                }
+
+            }
+
         }
     }
 }
 
-function show() {
-    if(notificationWindow == null){
-        notificationWindow = window.open('notification.htm', '終了時間', 'width=400, height=300, menubar=no, toolbar=no, scrollbars=yes');
-    }
+function showForIE() {
+    notificationWindow = window.open('notification.htm', '終了時間', 'width=400, height=300, menubar=no, toolbar=no, scrollbars=yes');
 }
 
-/*
+
 var Notification;
 
 function initNotification(){
@@ -67,23 +77,23 @@ function initNotification(){
     }
 }
 
-function show(str) {
+function show(str,iconPath) {
     if(Notification != null){
         // 通知インスタンス生成
         var instance = new Notification(
             "通知", // 通知タイトル
             {
                 body: str, // 通知内容
-                icon: null, // アイコン
+                icon: iconPath, // アイコン
             }
         );
         setTimeout(instance.close.bind(instance),10000);
         instance.onclick = function () {
             console.log("onclick");
         };
-        instance.onerror = function () {
-            console.log("onerror");
-        };
+        //instance.onerror = function () {
+        //    console.log("onerror");
+        //};
         instance.onshow = function () {
             console.log("onshow");
         };
@@ -98,4 +108,3 @@ function show(str) {
 onload = function() {
     initNotification();
 };
-*/
